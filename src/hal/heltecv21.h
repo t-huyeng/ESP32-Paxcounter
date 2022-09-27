@@ -12,7 +12,7 @@
 
 //#define HAS_BME 1 // Enable BME sensors in general
 //#define HAS_BME680 GPIO_NUM_4, GPIO_NUM_15 // SDA, SCL
-//#define BME680_ADDR BME680_I2C_ADDR_PRIMARY // connect SDIO of BME680 to GND 
+//#define BME680_ADDR BME680_I2C_ADDR_PRIMARY // connect SDIO of BME680 to GND
 //#define HAS_BMP180
 //#define BMP180_ADDR 0x77
 
@@ -45,5 +45,10 @@
 #define LORA_MOSI MOSI
 #define LORA_RST RST_LoRa
 #define LORA_CS SS
+
+
+// #define HAS_GPS 1 // use external GPS
+// #define GPS_SERIAL 9600, SERIAL_8N1, GPIO_NUM_2,GPIO_NUM_17 // UBlox NEO 6M
+// GPIO_NUM_2,GPIO_NUM_17
 
 #endif

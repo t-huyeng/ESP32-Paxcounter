@@ -86,7 +86,7 @@ void set_sendcycle(uint8_t val[]) {
 void set_sleepcycle(uint8_t val[]) {
   // swap byte order from msb to lsb, note: this is a platform dependent hack
   uint16_t t = __builtin_bswap16(*(uint16_t *)(val));
-  if (t == 0)
+  if (t == 0) // deactivation of sleep mode?
     return;
   cfg.sleepcycle = t;
   ESP_LOGI(TAG, "Remote command: set sleep cycle to %d seconds",

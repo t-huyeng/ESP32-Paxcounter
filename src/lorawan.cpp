@@ -327,6 +327,7 @@ void lora_enqueuedata(MessageBuffer_t *message) {
       pdTRUE) {
     snprintf(lmic_event_msg + 14, LMIC_EVENTMSG_LEN - 14, "<>");
     ESP_LOGW(TAG, "LORA sendqueue is full");
+     ESP_LOGW(TAG, "message %",message);
   } else {
     // add Lora send queue length to display
     snprintf(lmic_event_msg + 14, LMIC_EVENTMSG_LEN - 14, "%2u",

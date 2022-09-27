@@ -16,7 +16,7 @@
 #define CFG_sx1276_radio 1 // HPD13A LoRa SoC
 
 // enable only if you want to store a local paxcount table on the device
-#define HAS_SDCARD  2      // // this board has a SDMMC card-reader/writer
+#define HAS_SDCARD  2 //2 if needed      // // this board has a SDMMC card-reader/writer
 
 #define HAS_DISPLAY 1
 #define HAS_LED (25) // green on board LED
@@ -29,7 +29,7 @@
 #define MY_DISPLAY_RST NOT_A_PIN
 
 // Pins for LORA chip SPI interface, reset line and interrupt lines
-#define LORA_SCK  (5) 
+#define LORA_SCK  (5)
 #define LORA_CS   (18)
 #define LORA_MISO (19)
 #define LORA_MOSI (27)
@@ -37,5 +37,14 @@
 #define LORA_IRQ  (26)
 #define LORA_IO1  (33)
 #define LORA_IO2  (32)
+
+// additional settings for mo.tark
+// #define HAS_SENSOR_2 1
+// #define SOIL_SENSOR_PIN (34)
+// // #define trigPin (35)
+// // #define echoPin (34)
+
+// // #define HAS_GPS 1 // use external GPS
+// #define GPS_SERIAL 9600, SERIAL_8N1, GPIO_NUM_12, GPIO_NUM_15 // UBlox NEO 6M
 
 #endif

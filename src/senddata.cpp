@@ -170,6 +170,7 @@ void sendData() {
 #endif
 #if (HAS_SENSOR_2)
       case SENSOR2_DATA:
+        ESP_LOGI(TAG, "inside sensor 2 after case");
         payload.reset();
         payload.addSensor(sensor_read(2));
         SendPayload(SENSOR2PORT);
@@ -186,6 +187,7 @@ void sendData() {
 
 #if (defined BAT_MEASURE_ADC || defined HAS_PMU)
       case BATT_DATA:
+        ESP_LOGI(TAG, "reading Battery-Voltage");
         payload.reset();
         payload.addVoltage(read_voltage());
         SendPayload(BATTPORT);
