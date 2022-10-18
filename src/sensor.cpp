@@ -12,6 +12,7 @@ static const char TAG[] = __FILE__;
 uint16_t duration;
 uint16_t distance;
 #endif
+
 void sensor_init(void) {
   // this function is called during device startup
   // put your user sensor initialization routines here
@@ -46,7 +47,7 @@ uint8_t sensor_mask(uint8_t sensor_no) {
 uint8_t *sensor_read(uint8_t sensor) {
   static uint8_t buf[SENSORBUFFER] = {0};
   uint8_t length = 3;
-
+  hcsrStatus_t hcsrStatus;
   switch (sensor) {
   case 1:
     // insert user specific sensor data frames here
@@ -73,8 +74,11 @@ uint8_t *sensor_read(uint8_t sensor) {
     distance = duration * 0.034 / 2;
     ESP_LOGI(TAG, "Measure distance: %d", distance);
     // use old payload add functions
-    payload.addVoltage(duration);
-    payload.addVoltage(distance);
+    // payload.addVoltage(duration);
+    // payload.addVoltage(distance);
+
+    hcsrStatus = {duration, distance};
+    payload.addHCSR(hcsrStatus);
     break;
 
     // buf[0] = length;

@@ -125,6 +125,10 @@ void PayloadConvert::addBME(bmeStatus_t value) {
 #endif
 }
 
+void PayloadConvert::addHCSR(hcsrStatus_t value) {
+  // TODO
+}
+
 void PayloadConvert::addSDS(sdsStatus_t sds) {
 #if (HAS_SDS011)
   char tempBuffer[10 + 1];
@@ -216,6 +220,11 @@ void PayloadConvert::addBME(bmeStatus_t value) {
   writeUFloat(value.humidity);
   writeUFloat(value.iaq);
 #endif
+}
+
+void PayloadConvert::addHCSR(hcsrStatus_t value) {
+  writeUint16(value.duration);
+  writeUint16(value.distance);
 }
 
 void PayloadConvert::addSDS(sdsStatus_t sds) {
@@ -431,6 +440,10 @@ void PayloadConvert::addSensor(uint8_t buf[]) {
     cursor += length; // length of buffer
   */
 #endif // HAS_SENSORS
+}
+
+void PayloadConvert::addHCSR(hcsrStatus_t value) {
+  // TODO
 }
 
 void PayloadConvert::addBME(bmeStatus_t value) {

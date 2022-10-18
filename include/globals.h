@@ -107,6 +107,11 @@ typedef struct {
   float pm25;
 } sdsStatus_t;
 
-extern char clientId[20];   // unique clientID
+typedef struct {
+  uint16_t duration;
+  uint16_t distance;
+} hcsrStatus_t;
+
+extern char clientId[20]; // unique clientID
 
 #endif
