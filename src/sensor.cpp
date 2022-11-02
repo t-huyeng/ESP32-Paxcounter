@@ -2,6 +2,8 @@
 #include "globals.h"
 #include "sensor.h"
 
+#include "gy21read.h"
+
 // Local logging tag
 static const char TAG[] = __FILE__;
 
@@ -11,6 +13,7 @@ static const char TAG[] = __FILE__;
 void sensor_init(void) {
   // this function is called during device startup
   // put your user sensor initialization routines here
+  gy21_init(GY21_ADDRESS);
 }
 
 uint8_t sensor_mask(uint8_t sensor_no) {
@@ -39,9 +42,15 @@ uint8_t sensor_mask(uint8_t sensor_no) {
 uint8_t *sensor_read(uint8_t sensor) {
   static uint8_t buf[SENSORBUFFER] = {0};
   uint8_t length = 3;
+  double temperature, humidity;
 
   switch (sensor) {
   case 1:
+    temperature = gy21_read_temperature(GY21_ADDRESS);
+    humidity = gy21_read_humidity(GY21_ADDRESS);
+    ESP_LOGD(TAG, "GY21: Temperature: %f", temperature);
+    ESP_LOGD(TAG, "GY21: Humidity: %f", humidity);
+    // TODO send data
     // insert user specific sensor data frames here
     buf[0] = length;
     buf[1] = 0x01;
