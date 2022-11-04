@@ -26,8 +26,9 @@ void sensor_init(void) {
             // (sensor doesn't operate correctly if VDD < +2.25v)
   {
     ESP_LOGE(TAG, "HTU2xD/SHT2x not connected, fail or VDD < +2.25v");
+  } else {
+    ESP_LOGE(TAG, "HTU2xD/SHT2x/GY21 found");
   }
-  ESP_LOGE(TAG, "HTU2xD/SHT2x/GY21 found");
 }
 
 uint8_t sensor_mask(uint8_t sensor_no) {
