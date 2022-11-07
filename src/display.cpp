@@ -204,7 +204,7 @@ void dp_refresh(bool nextPage) {
     if (cfg.wifiscan)
       dp->printf("WIFI:%-5u", count.wifi_count);
     else
-      dp->printf("WIFI:off");
+      dp->printf("WIFI:off  ");
     if (cfg.blescan)
       dp->printf("BLTH:%-5u", count.ble_count);
     else
@@ -213,7 +213,7 @@ void dp_refresh(bool nextPage) {
     if (cfg.wifiscan)
       dp->printf("WIFI:%-5u", count.wifi_count);
     else
-      dp->printf("WIFI:off");
+      dp->printf("WIFI:off  ");
 #elif ((!WIFICOUNTER) && (BLECOUNTER))
     if (cfg.blescan)
       dp->printf("BLTH:%-5u", count.ble_count);
@@ -344,11 +344,11 @@ void dp_refresh(bool nextPage) {
 #if (HAS_BME)
     dp_setFont(MY_FONT_STRETCHED);
     dp->setCursor(0, 0);
-    dp->printf("TMP: %-6.1f\r\n", bme_status.temperature);
-    dp->printf("HUM: %-6.1f\r\n", bme_status.humidity);
-    dp->printf("PRE: %-6.1f\r\n", bme_status.pressure);
+    dp->printf("TMP %-6.1f\r\n", bme_status.temperature);
+    dp->printf("HUM %-6.1f\r\n", bme_status.humidity);
+    dp->printf("PRS %-6.1f\r\n", bme_status.pressure);
 #ifdef HAS_BME680
-    dp->printf("IAQ: %-6.0f", bme_status.iaq);
+    dp->printf("IAQ %-6.0f", bme_status.iaq);
 #endif
     dp_dump();
     break;

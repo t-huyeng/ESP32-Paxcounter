@@ -28,6 +28,7 @@ licenses. Refer to LICENSE.txt file in repository for more details.
 Task          	Core  Prio  Purpose
 -------------------------------------------------------------------------------
 ledloop*      	1     1    blinks LEDs
+buttonloop*     1     2    reads button
 spiloop#      	0     2    reads/writes data on spi interface
 lmictask*     	1     2    MCCI LMiC LORAWAN stack
 clockloop#    	1     6    generates realtime telegrams for external clock
@@ -201,26 +202,26 @@ void setup() {
 #endif
 
 // initialize leds
+#ifdef HAS_RGB_LED
+  rgb_led_init();
+  strcat_P(features, " RGB");
+#endif
+
 #if (HAS_LED != NOT_A_PIN)
   pinMode(HAS_LED, OUTPUT);
   strcat_P(features, " LED");
-
 #ifdef LED_POWER_SW
   pinMode(LED_POWER_SW, OUTPUT);
   digitalWrite(LED_POWER_SW, LED_POWER_ON);
 #endif
-
 #ifdef HAS_TWO_LED
   pinMode(HAS_TWO_LED, OUTPUT);
   strcat_P(features, " LED2");
 #endif
-
-// use LED for power display if we have additional RGB LED, else for status
+// use simple LED for power display if we have additional RGB LED, else for status
 #ifdef HAS_RGB_LED
   switch_LED(LED_ON);
-  strcat_P(features, " RGB");
 #endif
-
 #endif // HAS_LED
 
 #if (HAS_LED != NOT_A_PIN) || defined(HAS_RGB_LED)
@@ -276,6 +277,7 @@ void setup() {
   libpax_default_config(&configuration);
 
   // configure WIFI sniffing
+  strcpy(configuration.wifi_my_country_str, WIFI_MY_COUNTRY);
   configuration.wificounter = cfg.wifiscan;
   configuration.wifi_channel_map = WIFI_CHANNEL_ALL;
   configuration.wifi_channel_switch_interval = cfg.wifichancycle;
@@ -467,7 +469,7 @@ void setup() {
 #else
   strcat_P(features, "PD");
 #endif // BUTTON_PULLUP
-  button_init(HAS_BUTTON);
+  button_init();
 #endif // HAS_BUTTON
 
 // only if we have a timesource we do timesync

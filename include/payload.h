@@ -101,6 +101,5 @@ private:
 };
 
 extern PayloadConvert payload;
-extern int8_t batt_level;
 
 #endif // _PAYLOAD_H_
