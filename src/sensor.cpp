@@ -21,6 +21,7 @@ static const char TAG[] = __FILE__;
 void sensor_init(void) {
   // this function is called during device startup
   // put your user sensor initialization routines here
+  #if (HAS_GY21)
   if (ht2x.begin() !=
       true) // reset sensor, set heater off, set resolution, check power
             // (sensor doesn't operate correctly if VDD < +2.25v)
@@ -29,6 +30,7 @@ void sensor_init(void) {
   } else {
     ESP_LOGE(TAG, "HTU2xD/SHT2x/GY21 found");
   }
+  #endif // HAS_GY21
 }
 
 uint8_t sensor_mask(uint8_t sensor_no) {
@@ -74,6 +76,7 @@ uint8_t *sensor_read(uint8_t sensor) {
     buf[3] = 0x03;
     break;
   case 3:
+    #if (HAS_GY21)
     ESP_LOGE(TAG, "Reading Sensor 3, GY21");
     temperature =
         ht2x.readTemperature(); // accuracy +-0.3C in range 0C..60C at  14-bit
@@ -82,8 +85,8 @@ uint8_t *sensor_read(uint8_t sensor) {
         ht2x.readHumidity(); // accuracy +-2% in range 20%..80%/25C at 12-bit
     ESP_LOGE(TAG, "GY21: Temperature: %f", temperature);
     ESP_LOGE(TAG, "GY21: Humidity: %f", humidity);
-    payload.addVoltage(temperature * 100);
-    payload.addVoltage(humidity * 100);
+    payload.addTempHum(temperature, humidity);
+    #endif // HAS_GY21
     break;
   }
 
