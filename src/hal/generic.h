@@ -1,7 +1,6 @@
 // clang-format off
 // upload_speed 115200
 // board esp32dev
-// display_library lib_deps_oled_display
 
 #ifndef _GENERIC_H
 #define _GENERIC_H
@@ -62,7 +61,7 @@
 
 #define CFG_sx1276_radio 1 // select LoRa chip
 //#define CFG_sx1272_radio 1 // select LoRa chip
-#define BOARD_HAS_PSRAM // use if board has external PSRAM
+//#define BOARD_HAS_PSRAM // use if board has external SPIRAM, note: this will reduce IRAM0 by 64KB for SPIRAM cache
 #define DISABLE_BROWNOUT 1 // comment out if you want to keep brownout feature
 
 #define HAS_DISPLAY 1

@@ -1,6 +1,7 @@
 // clang-format off
 // upload_speed 921600
-// board m5stack-fire
+// board m5stack-core-esp32
+// b0ard m5stack-fire -> does not compile due to IRAM0 shortage, because 64KB of 192KB used for caching external SPIRAM
 
 // note use of GPIO16/17
 // https://www.bjoerns-techblog.de/2019/03/m5stack-fire-eine-uebersicht/
