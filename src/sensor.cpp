@@ -2,7 +2,6 @@
 #include "globals.h"
 #include "sensor.h"
 
-
 #define SENSORBUFFER                                                           \
   10 // max. size of user sensor data buffer in bytes [default=20]
 
@@ -71,20 +70,10 @@ uint8_t *sensor_read(uint8_t sensor) {
     // Calculating the distance
     distance = duration * 0.034 / 2;
     ESP_LOGI(TAG, "Measure distance: %d", distance);
-    // use old payload add functions
-    // payload.addVoltage(duration);
-    // payload.addVoltage(distance);
 
     hcsrStatus = {duration, distance};
     payload.addHCSR(hcsrStatus);
     break;
-
-    // buf[0] = length;
-    // buf[1] = 0x01;
-    // buf[2] = 0x02;
-    // buf[3] = 0x03;
-    // break;
-
   case 3:
     buf[0] = length;
     buf[1] = 0x01;
