@@ -37,8 +37,6 @@ MY_FONT_LARGE:     16x32px = 8 chars / line @ 2 lines
 #include "globals.h"
 #include "display.h"
 
-// local Tag for logging
-static const char TAG[] = __FILE__;
 
 static uint8_t plotbuf[PLOTBUFFERSIZE] = {0};
 uint8_t DisplayIsOn = 0;
@@ -49,7 +47,7 @@ static QRCode qrcode;
 #ifdef HAS_DISPLAY
 #if (HAS_DISPLAY) == 1
 ONE_BIT_DISPLAY *dp = NULL;
-#elif (HAS_DISPLAY) == 2
+#elif (HAS_DISPLAY) > 1
 BB_SPI_LCD *dp = NULL;
 #else
 #error Unknown display type specified in hal file
@@ -66,15 +64,15 @@ void dp_setup(int contrast) {
   dp->allocBuffer(); // render all outputs to lib internal backbuffer
   dp->setTextWrap(false);
   dp->setRotation(
-      MY_DISPLAY_FLIP ? 2 : 0); // 0 = no rotation, 1 = 90°, 2 = 180°, 3 = 280°
+      MY_DISPLAY_FLIP ? 2 : 0); // 0 = no rotation, 1 = 90°, 2 = 180°, 3 = 270°
 
-#elif (HAS_DISPLAY) == 2 // TFT LCD
+#elif (HAS_DISPLAY) > 1 // TFT LCD
 
   dp = new BB_SPI_LCD;
   dp->begin(TFT_TYPE);
   dp->allocBuffer(); // render all outputs to lib internal backbuffer
   dp->setRotation(
-      MY_DISPLAY_FLIP ? 1 : 3); // 0 = no rotation, 1 = 90°, 2 = 180°, 3 = 280°
+      MY_DISPLAY_FLIP ? 1 : 3); // 0 = no rotation, 1 = 90°, 2 = 180°, 3 = 270°
   dp->setTextColor(MY_DISPLAY_FGCOLOR, MY_DISPLAY_BGCOLOR);
 
 #endif
@@ -200,7 +198,6 @@ void dp_refresh(bool nextPage) {
     // line 3: wifi + bluetooth counters
     // WIFI:abcde BLTH:abcde
 
-#if ((WIFICOUNTER) && (BLECOUNTER))
     if (cfg.wifiscan)
       dp->printf("WIFI:%-5u", count.wifi_count);
     else
@@ -209,18 +206,6 @@ void dp_refresh(bool nextPage) {
       dp->printf("BLTH:%-5u", count.ble_count);
     else
       dp->printf(" BLTH:off");
-#elif ((WIFICOUNTER) && (!BLECOUNTER))
-    if (cfg.wifiscan)
-      dp->printf("WIFI:%-5u", count.wifi_count);
-    else
-      dp->printf("WIFI:off  ");
-#elif ((!WIFICOUNTER) && (BLECOUNTER))
-    if (cfg.blescan)
-      dp->printf("BLTH:%-5u", count.ble_count);
-    dp->printf("BLTH:off");
-#else
-    dp->printf("Sniffer disabled");
-#endif
     dp->printf("\r\n");
 
     // line 4: Battery + GPS status + Wifi channel
@@ -421,7 +406,7 @@ void dp_clear(void) {
 void dp_contrast(uint8_t contrast) {
 #if (HAS_DISPLAY) == 1
   dp->setContrast(contrast);
-#elif (HAS_DISPLAY) == 2
+#elif (HAS_DISPLAY) > 1
   // to do: gamma correction for TFT
 #endif
 }
@@ -429,7 +414,7 @@ void dp_contrast(uint8_t contrast) {
 void dp_power(uint8_t screenon) {
 #if (HAS_DISPLAY) == 1
   dp->setPower(screenon);
-#elif (HAS_DISPLAY) == 2
+#elif (HAS_DISPLAY) > 1
   // to come
 #endif
 }
@@ -438,7 +423,7 @@ void dp_shutdown(void) {
 #if (HAS_DISPLAY) == 1
   dp->setPower(false);
   delay(DISPLAYREFRESH_MS / 1000 * 1.1);
-#elif (HAS_DISPLAY) == 2
+#elif (HAS_DISPLAY) > 1
   // to come
 #endif
 }

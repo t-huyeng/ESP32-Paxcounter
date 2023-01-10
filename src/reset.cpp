@@ -2,9 +2,6 @@
 #include "globals.h"
 #include "reset.h"
 
-// Local logging tag
-static const char TAG[] = __FILE__;
-
 // Conversion factor for micro seconds to seconds
 #define uS_TO_S_FACTOR 1000000ULL
 
@@ -84,11 +81,10 @@ void do_after_reset(void) {
   }
 }
 
-void enter_deepsleep(const uint64_t wakeup_sec, gpio_num_t wakeup_gpio) {
+void enter_deepsleep(const uint32_t wakeup_sec, gpio_num_t wakeup_gpio) {
   ESP_LOGI(TAG, "Preparing to sleep...");
 
   RTC_runmode = RUNMODE_SLEEP;
-  int i;
 
   // validate wake up pin, if we have
   if (!GPIO_IS_VALID_GPIO(wakeup_gpio))
@@ -101,29 +97,17 @@ void enter_deepsleep(const uint64_t wakeup_sec, gpio_num_t wakeup_gpio) {
   sds011_sleep();
 #endif
 
-// flush & close sd card, if we have
-#if (HAS_SDCARD)
-  sdcard_close();
-#endif
-
   // wait a while (max 100 sec) to clear send queues
   ESP_LOGI(TAG, "Waiting until send queues are empty...");
-  for (i = 100; i > 0; i--) {
+  for (int i = 100; i > 0; i--) {
     if (allQueuesEmtpy())
       break;
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
 
-/// wait until LMIC is idle
+// wait up to 100secs until LMIC is idle
 #if (HAS_LORA)
-  ESP_LOGI(TAG, "Waiting until LMIC is idle...");
-  for (i = 100; i > 0; i--) {
-    if ((LMIC.opmode & (OP_JOINING | OP_TXDATA | OP_POLL | OP_TXRXPEND)) ||
-        os_queryTimeCriticalJobs(sec2osticks(wakeup_sec)))
-      vTaskDelay(pdMS_TO_TICKS(1000));
-    else
-      break;
-  }
+  lora_waitforidle(100);
 #endif // (HAS_LORA)
 
 // shutdown MQTT safely
@@ -177,6 +161,12 @@ void enter_deepsleep(const uint64_t wakeup_sec, gpio_num_t wakeup_gpio) {
   gettimeofday(&RTC_sleep_start_time, NULL);
   RTC_millis += esp_timer_get_time() / 1000;
   ESP_LOGI(TAG, "Going to sleep, good bye.");
+
+// flush & close sd card, if we have
+#if (HAS_SDCARD)
+  sdcard_close();
+#endif
+
   esp_deep_sleep_start();
 }
 

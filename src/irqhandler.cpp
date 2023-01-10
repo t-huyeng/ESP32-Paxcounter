@@ -1,7 +1,5 @@
 #include "irqhandler.h"
 
-// Local logging tag
-static const char TAG[] = __FILE__;
 
 TaskHandle_t irqHandlerTask = NULL;
 
@@ -76,9 +74,9 @@ void irqHandler(void *pvParameters) {
       // goto sleep if we have a sleep cycle
       if (cfg.sleepcycle)
 #ifdef HAS_BUTTON
-        enter_deepsleep(cfg.sleepcycle * 10, (gpio_num_t)HAS_BUTTON);
+        enter_deepsleep(cfg.sleepcycle * 10UL, (gpio_num_t)HAS_BUTTON);
 #else
-        enter_deepsleep(cfg.sleepcycle * 10);
+        enter_deepsleep(cfg.sleepcycle * 10UL, GPIO_NUM_MAX);
 #endif
     }
   } // for

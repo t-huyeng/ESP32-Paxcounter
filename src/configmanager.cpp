@@ -3,8 +3,6 @@
 #include "globals.h"
 #include "configmanager.h"
 
-// Local logging tag
-static const char TAG[] = __FILE__;
 
 // namespace for device runtime preferences
 #define DEVCONFIG "paxcntcfg"
@@ -37,7 +35,7 @@ static void defaultConfig(configData_t *myconfig) {
   myconfig->screenon = 1;               // 0=disabled, 1=enabled
   myconfig->countermode =
       COUNTERMODE;                 // 0=cyclic, 1=cumulative, 2=cyclic confirmed
-  myconfig->rssilimit = 0;         // threshold for rssilimiter, negative value!
+  myconfig->rssilimit = RSSILIMIT; // threshold for rssilimiter, negative value!
   myconfig->sendcycle = SENDCYCLE; // payload send cycle [seconds/2]
   myconfig->sleepcycle = SLEEPCYCLE; // sleep cycle [seconds/10]
   myconfig->wifichancycle =

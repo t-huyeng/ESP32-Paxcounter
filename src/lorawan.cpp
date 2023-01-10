@@ -3,8 +3,6 @@
 #if (HAS_LORA)
 #include "lorawan.h"
 
-// Local logging Tag
-static const char TAG[] = __FILE__;
 
 #if CLOCK_ERROR_PROCENTAGE > 7
 #warning CLOCK_ERROR_PROCENTAGE value in lmic_config.h is too high; values > 7 will cause side effects
@@ -334,6 +332,18 @@ uint32_t lora_queuewaiting(void) {
   return uxQueueMessagesWaiting(LoraSendQueue);
 }
 
+// blocking wait until LMIC is idle
+void lora_waitforidle(uint16_t timeout_sec) {
+  ESP_LOGI(TAG, "Waiting until LMIC is idle...");
+  for (int i = timeout_sec; i > 0; i--) {
+    if ((LMIC.opmode & (OP_JOINING | OP_TXDATA | OP_POLL | OP_TXRXPEND)) ||
+        os_queryTimeCriticalJobs(sec2osticks(timeout_sec)))
+      vTaskDelay(pdMS_TO_TICKS(1000));
+    else
+      break;
+  }
+}
+
 // LMIC loop task
 void lmictask(void *pvParameters) {
   _ASSERT((uint32_t)pvParameters == 1);
@@ -501,7 +511,7 @@ bool ttn_rtc_restore() {
 // following code includes snippets taken from
 // https://github.com/JackGruber/ESP32-LMIC-DeepSleep-example/blob/master/src/main.cpp
 
-void SaveLMICToRTC(int deepsleep_sec) {
+void SaveLMICToRTC(uint32_t deepsleep_sec) {
   // ESP32 can't track millis during DeepSleep and no option to advance
   // millis after DeepSleep. Therefore reset DutyCyles before saving LMIC struct
 
