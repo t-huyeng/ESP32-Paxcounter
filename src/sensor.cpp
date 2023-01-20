@@ -7,8 +7,60 @@
 
 #if (HAS_SENSOR_2)
 uint16_t duration;
-uint16_t distance;
+float distance;
+const int NUM_MEASUREMENTS = 20;
+float TEMPERATURE_COMPENSATION = 0.01;
+float measurements[NUM_MEASUREMENTS];
+int trimPercent = 10;
+long MAX_DISTANCE = 400;
 #endif
+
+uint16_t get_duration() {
+  digitalWrite(TRIGPIN, LOW);
+  delayMicroseconds(2);
+  // Sets the trigPin on HIGH state for 10 micro seconds
+  digitalWrite(TRIGPIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIGPIN, LOW);
+  // Reads the echoPin, returns the sound wave travel time in microseconds
+  // duration = pulseIn(ECHOPIN, HIGH);
+  long duration = pulseIn(ECHOPIN, HIGH, MAX_DISTANCE * 58);
+  return duration;
+}
+
+hcsrStatus_t read_ultrasonic() {
+  hcsrStatus_t hcsrStatus;
+  // Temperature compensation
+  // temperature = getTemperature();
+  // TODO use real temperature
+  float temperature = 20;
+  for (int i = 0; i < NUM_MEASUREMENTS; i++) {
+    duration = get_duration();
+    // Calculate distance
+    float measurement = duration / 58.2;
+    // measurement = measurement / (1 + (temperature *
+    // TEMPERATURE_COMPENSATION)); ESP_LOGI(TAG, "Measure measurement: %f",
+    // measurement);
+    measurements[i] = measurement;
+  }
+  // Sort measurements in ascending order
+  std::sort(measurements, measurements + NUM_MEASUREMENTS);
+
+  // Calculate number of measurements to trim
+  int trimCount = (trimPercent / 100.0) * NUM_MEASUREMENTS;
+
+  // Trim measurements
+  float sum = 0;
+  for (int i = trimCount; i < NUM_MEASUREMENTS - trimCount; i++) {
+    sum += measurements[i];
+  }
+
+  distance = sum / (NUM_MEASUREMENTS - (2 * trimCount));
+  ESP_LOGI(TAG, "Measure distance: %f", distance);
+
+  hcsrStatus = {duration, distance};
+  return hcsrStatus;
+}
 
 void sensor_init(void) {
   // this function is called during device startup
@@ -55,23 +107,7 @@ uint8_t *sensor_read(uint8_t sensor) {
     break;
   case 2:
     ESP_LOGI(TAG, "Inside Sensor 2");
-    digitalWrite(TRIGPIN, LOW);
-    delayMicroseconds(2);
-
-    // Sets the trigPin on HIGH state for 10 micro seconds
-    digitalWrite(TRIGPIN, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(TRIGPIN, LOW);
-
-    // Reads the echoPin, returns the sound wave travel time in microseconds
-    duration = pulseIn(ECHOPIN, HIGH);
-    ESP_LOGI(TAG, "Measure duration: %d", duration);
-
-    // Calculating the distance
-    distance = duration * 0.034 / 2;
-    ESP_LOGI(TAG, "Measure distance: %d", distance);
-
-    hcsrStatus = {duration, distance};
+    hcsrStatus = read_ultrasonic();
     payload.addHCSR(hcsrStatus);
     break;
   case 3:

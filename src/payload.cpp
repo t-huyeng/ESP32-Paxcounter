@@ -224,7 +224,7 @@ void PayloadConvert::addBME(bmeStatus_t value) {
 
 void PayloadConvert::addHCSR(hcsrStatus_t value) {
   writeUint16(value.duration);
-  writeUint16(value.distance);
+  writeFloat(value.distance);
 }
 
 void PayloadConvert::addSDS(sdsStatus_t sds) {
