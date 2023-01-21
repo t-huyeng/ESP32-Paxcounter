@@ -2,6 +2,12 @@
 #include "globals.h"
 #include "sensor.h"
 
+#if(HAS_SENSOR_1)
+
+const int threshold = 600;
+#endif
+
+
 #if (HAS_GY21)
 #include <HTU2xD_SHT2x_Si70xx.h>
 
@@ -43,7 +49,11 @@ hcsrStatus_t read_ultrasonic() {
   // Temperature compensation
   // temperature = getTemperature();
   // TODO use real temperature
+  #if (HAS_GY21)
+  float temperature = ht2x.readTemperature();
+  #else
   float temperature = 20;
+  #endif
   for (int i = 0; i < NUM_MEASUREMENTS; i++) {
     duration = get_duration();
     // Calculate distance
@@ -78,7 +88,7 @@ void sensor_init(void) {
   ESP_LOGI(TAG, "sensor_init() called");
   pinMode(TRIGPIN, OUTPUT); // Sets the trigPin as an Output
   pinMode(ECHOPIN, INPUT);  // Sets the echoPin as an Input
-  #if (HAS_GY21)
+#if (HAS_GY21)
   if (ht2x.begin() !=
       true) // reset sensor, set heater off, set resolution, check power
             // (sensor doesn't operate correctly if VDD < +2.25v)
@@ -87,7 +97,7 @@ void sensor_init(void) {
   } else {
     ESP_LOGE(TAG, "HTU2xD/SHT2x/GY21 found");
   }
-  #endif // HAS_GY21
+#endif // HAS_GY21
 }
 
 uint8_t sensor_mask(uint8_t sensor_no) {
@@ -116,14 +126,18 @@ uint8_t sensor_mask(uint8_t sensor_no) {
 uint8_t *sensor_read(uint8_t sensor) {
   static uint8_t buf[SENSORBUFFER] = {0};
   uint8_t length = 3;
-  hcsrStatus_t hcsrStatus;  double temperature, humidity;
+  hcsrStatus_t hcsrStatus;
+  double temperature, humidity;
+  int sensorValue;
   switch (sensor) {
   case 1:
-    // insert user specific sensor data frames here
-    buf[0] = length;
-    buf[1] = 0x01;
-    buf[2] = 0x02;
-    buf[3] = 0x03;
+  ESP_LOGI(TAG, "Inside Sensor 1");
+  sensorValue = analogRead(SENSORPIN);
+  ESP_LOGI(TAG, "Sensor Value: %d", sensorValue);
+  if (sensorValue > threshold) {
+    ESP_LOGI(TAG, "Sensor Value > threshold");
+  }
+    payload.addCount(sensorValue,1);
     break;
   case 2:
     ESP_LOGI(TAG, "Inside Sensor 2");
@@ -131,7 +145,7 @@ uint8_t *sensor_read(uint8_t sensor) {
     payload.addHCSR(hcsrStatus);
     break;
   case 3:
-    #if (HAS_GY21)
+#if (HAS_GY21)
     ESP_LOGE(TAG, "Reading Sensor 3, GY21");
     temperature =
         ht2x.readTemperature(); // accuracy +-0.3C in range 0C..60C at  14-bit
@@ -141,7 +155,7 @@ uint8_t *sensor_read(uint8_t sensor) {
     ESP_LOGE(TAG, "GY21: Temperature: %f", temperature);
     ESP_LOGE(TAG, "GY21: Humidity: %f", humidity);
     payload.addTempHum(temperature, humidity);
-    #endif // HAS_GY21
+#endif // HAS_GY21
     break;
   }
 
